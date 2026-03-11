@@ -1,4 +1,12 @@
-// Preload script for Electron security
+const { contextBridge, ipcRenderer } = require('electron');
+
+// Expose database API to renderer process
+contextBridge.exposeInMainWorld('blogAPI', {
+  getArticles: () => ipcRenderer.invoke('get-articles'),
+  getArticle: (slug) => ipcRenderer.invoke('get-article', slug),
+  searchArticles: (query) => ipcRenderer.invoke('search-articles', query)
+});
+
 window.addEventListener('DOMContentLoaded', () => {
   console.log('GitHub Blogger loaded');
 });
