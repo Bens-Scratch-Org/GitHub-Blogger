@@ -8,7 +8,7 @@ const CopilotService = require('./copilotService');
 let mainWindow;
 let db;
 let feedFetcher;
-let copilot;
+// let copilot; // Disabled until SDK CommonJS support
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -46,13 +46,13 @@ app.on('ready', async () => {
   }
   
   // Initialize Copilot
-  copilot = new CopilotService(db);
-  try {
-    await copilot.init();
-    console.log('Copilot SDK initialized');
-  } catch (error) {
-    console.error('Failed to initialize Copilot:', error);
-  }
+  // copilot = new CopilotService(db);
+  // try {
+  //   await copilot.init();
+  //   console.log('Copilot SDK initialized');
+  // } catch (error) {
+  //   console.error('Failed to initialize Copilot:', error);
+  // }
   
   createWindow();
 
@@ -79,12 +79,10 @@ app.on('ready', async () => {
   });
 
   ipcMain.handle('copilot-chat', async (event, message) => {
-    try {
-      return await copilot.chat(message);
-    } catch (error) {
-      console.error('Copilot chat error:', error);
-      throw error;
-    }
+    // Temporary mock response until SDK is properly configured
+    return {
+      message: `I'm the AI assistant. You asked: "${message}"\n\nI can help you search articles, find content by category, and answer questions about the blog. (Copilot SDK integration in progress)`
+    };
   });
 });
 
