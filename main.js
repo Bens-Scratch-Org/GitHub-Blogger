@@ -37,11 +37,6 @@ function createWindow() {
   //   mainWindow.webContents.openDevTools();
   // }
 
-  // Prevent app from auto-quitting
-  mainWindow.on('close', (e) => {
-    console.log('Window close event triggered');
-  });
-
   mainWindow.on('closed', () => {
     console.log('Window closed');
     mainWindow = null;
