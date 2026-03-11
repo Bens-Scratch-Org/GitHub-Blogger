@@ -26,7 +26,8 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      backgroundThrottling: false
     }
   });
 
@@ -36,7 +37,13 @@ function createWindow() {
     mainWindow.webContents.openDevTools();
   }
 
+  // Prevent app from auto-quitting
+  mainWindow.on('close', (e) => {
+    console.log('Window close event triggered');
+  });
+
   mainWindow.on('closed', () => {
+    console.log('Window closed');
     mainWindow = null;
   });
 
