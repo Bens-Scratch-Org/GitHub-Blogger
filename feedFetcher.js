@@ -19,15 +19,17 @@ class FeedFetcher {
       const xmlData = response.data;
       
       const parser = new xml2js.Parser({
-        strict: false,
-        trim: true,
-        normalize: true,
-        explicitArray: false
+        explicitArray: false,
+        tagNameProcessors: [xml2js.processors.stripPrefix],
+        attrNameProcessors: [xml2js.processors.stripPrefix]
       });
       const result = await parser.parseStringPromise(xmlData);
       
+      console.log('Feed parsed successfully');
+      
       if (!result.rss || !result.rss.channel || !result.rss.channel.item) {
         console.log('No entries found in feed');
+        console.log('Result keys:', Object.keys(result));
         return { newPosts: 0, updatedPosts: 0 };
       }
 
@@ -82,7 +84,12 @@ class FeedFetcher {
   }
 
   async maintainPostLimit(maxPosts) {
-    const allArticles = this.db.data.articles
+    if (!this.db.db || !this.db.db.data || !this.db.db.data.articles) {
+      console.log('Database not initialized properly');
+      return;
+    }
+    
+    const allArticles = [...this.db.db.data.articles]
       .sort((a, b) => new Date(b.published_date) - new Date(a.published_date));
 
     if (allArticles.length > maxPosts) {
