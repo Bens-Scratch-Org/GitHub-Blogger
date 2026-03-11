@@ -52,12 +52,23 @@ function createWindow() {
 }
 
 app.on('ready', async () => {
+  // Prevent GPU/network crashes
+  app.commandLine.appendSwitch('disable-gpu-sandbox');
+  app.commandLine.appendSwitch('disable-software-rasterizer');
+  
   db = new BlogDatabase();
   await db.init();
   
   feedFetcher = new FeedFetcher(db);
   
   createWindow();
+  
+  // Keep process alive
+  setInterval(() => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      // Ping to keep alive
+    }
+  }, 10000);
   
   // Disable automatic feed fetch - use manual refresh button instead
   // setTimeout(async () => {
