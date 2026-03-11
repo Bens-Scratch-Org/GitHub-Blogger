@@ -55,7 +55,7 @@ function formatDate(dateString) {
 
 // View single article
 async function viewArticle(slug) {
-  window.location.href = `article.html?slug=${slug}`;
+  await window.blogAPI.navigateToArticle(slug);
 }
 
 // Search functionality

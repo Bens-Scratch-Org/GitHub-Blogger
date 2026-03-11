@@ -108,6 +108,14 @@ app.on('ready', async () => {
       message: `I'm the AI assistant. You asked: "${message}"\n\nI can help you search articles, find content by category, and answer questions about the blog. (Copilot SDK integration in progress)`
     };
   });
+
+  ipcMain.handle('navigate-to-article', async (event, slug) => {
+    mainWindow.loadFile('article.html', { query: { slug } });
+  });
+
+  ipcMain.handle('navigate-home', async () => {
+    mainWindow.loadFile('index.html');
+  });
 });
 
 app.on('window-all-closed', () => {

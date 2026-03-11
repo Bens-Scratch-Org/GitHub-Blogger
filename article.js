@@ -53,4 +53,13 @@ function formatContent(content) {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
   loadArticle();
+
+  // Add home navigation
+  const homeLink = document.getElementById('home-link');
+  if (homeLink) {
+    homeLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await window.blogAPI.navigateHome();
+    });
+  }
 });
