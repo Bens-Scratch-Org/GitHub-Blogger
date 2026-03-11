@@ -33,9 +33,9 @@ function createWindow() {
 
   mainWindow.loadFile('index.html');
 
-  if (isDev) {
-    mainWindow.webContents.openDevTools();
-  }
+  // if (isDev) {
+  //   mainWindow.webContents.openDevTools();
+  // }
 
   // Prevent app from auto-quitting
   mainWindow.on('close', (e) => {
