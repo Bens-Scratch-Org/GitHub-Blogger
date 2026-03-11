@@ -57,13 +57,11 @@ class FeedFetcher {
         };
 
         if (existingArticle) {
-          // Append new content to existing
-          const updatedContent = existingArticle.content + '\n\n--- Updated ---\n\n' + articleData.content;
-          await this.db.updateArticle(existingArticle.id, {
-            ...articleData,
-            content: updatedContent
-          });
-          updatedPosts++;
+          // Check if content has actually changed before updating
+          if (existingArticle.content !== articleData.content) {
+            await this.db.updateArticle(existingArticle.id, articleData);
+            updatedPosts++;
+          }
         } else {
           // Create new article
           await this.db.createArticle(articleData);
