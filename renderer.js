@@ -92,4 +92,24 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Add refresh button handler
+  const refreshBtn = document.querySelector('#refresh-btn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', async () => {
+      refreshBtn.disabled = true;
+      refreshBtn.textContent = '↻ Refreshing...';
+      try {
+        const result = await window.blogAPI.refreshFeed();
+        await loadArticles();
+        alert(`Feed refreshed! ${result.newPosts} new posts, ${result.updatedPosts} updated posts`);
+      } catch (error) {
+        console.error('Error refreshing feed:', error);
+        alert('Failed to refresh feed. Check console for details.');
+      } finally {
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = '↻ Refresh';
+      }
+    });
+  }
 });

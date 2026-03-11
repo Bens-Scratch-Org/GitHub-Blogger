@@ -10,47 +10,7 @@ class BlogDatabase {
 
   async init() {
     const defaultData = {
-      articles: [
-        {
-          id: 1,
-          title: 'Building Modern Web Applications',
-          slug: 'building-modern-web-applications',
-          content: 'Full article content here...',
-          excerpt: 'Explore the latest techniques and best practices for creating responsive, performant web applications.',
-          author: 'John Doe',
-          category: 'Engineering',
-          tags: ['web', 'javascript', 'development'],
-          published_date: '2026-03-10',
-          status: 'published',
-          views: 0
-        },
-        {
-          id: 2,
-          title: 'Designing for Accessibility',
-          slug: 'designing-for-accessibility',
-          content: 'Full article content here...',
-          excerpt: 'Learn how to make your applications accessible to everyone with inclusive design principles.',
-          author: 'Jane Smith',
-          category: 'Product',
-          tags: ['design', 'accessibility', 'ux'],
-          published_date: '2026-03-09',
-          status: 'published',
-          views: 0
-        },
-        {
-          id: 3,
-          title: 'Securing Your Code',
-          slug: 'securing-your-code',
-          content: 'Full article content here...',
-          excerpt: 'Best practices for keeping your codebase secure and protecting against vulnerabilities.',
-          author: 'Alex Johnson',
-          category: 'Security',
-          tags: ['security', 'best-practices'],
-          published_date: '2026-03-08',
-          status: 'published',
-          views: 0
-        }
-      ],
+      articles: [],
       comments: [],
       categories: []
     };

@@ -4,7 +4,8 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('blogAPI', {
   getArticles: () => ipcRenderer.invoke('get-articles'),
   getArticle: (slug) => ipcRenderer.invoke('get-article', slug),
-  searchArticles: (query) => ipcRenderer.invoke('search-articles', query)
+  searchArticles: (query) => ipcRenderer.invoke('search-articles', query),
+  refreshFeed: () => ipcRenderer.invoke('refresh-feed')
 });
 
 window.addEventListener('DOMContentLoaded', () => {

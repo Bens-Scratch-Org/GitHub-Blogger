@@ -2,9 +2,11 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
 const path = require('path');
 const BlogDatabase = require('./database');
+const FeedFetcher = require('./feedFetcher');
 
 let mainWindow;
 let db;
+let feedFetcher;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -31,6 +33,16 @@ function createWindow() {
 app.on('ready', async () => {
   db = new BlogDatabase();
   await db.init();
+  
+  feedFetcher = new FeedFetcher(db);
+  
+  // Fetch posts on startup
+  try {
+    await feedFetcher.fetchAndStorePosts();
+  } catch (error) {
+    console.error('Failed to fetch posts on startup:', error);
+  }
+  
   createWindow();
 
   // IPC handlers for database operations
@@ -44,6 +56,15 @@ app.on('ready', async () => {
 
   ipcMain.handle('search-articles', async (event, query) => {
     return db.searchArticles(query);
+  });
+
+  ipcMain.handle('refresh-feed', async () => {
+    try {
+      return await feedFetcher.fetchAndStorePosts();
+    } catch (error) {
+      console.error('Failed to refresh feed:', error);
+      throw error;
+    }
   });
 });
 
