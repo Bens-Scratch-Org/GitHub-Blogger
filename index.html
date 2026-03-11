@@ -23,6 +23,7 @@
           <li><a href="#articles">Articles</a></li>
           <li><a href="#about">About</a></li>
           <li><button id="refresh-btn" class="refresh-btn">↻ Refresh</button></li>
+          <li><button id="ai-assist-btn" class="ai-btn">🤖 AI Assistant</button></li>
         </ul>
       </nav>
     </div>
@@ -46,5 +47,22 @@
       <p>&copy; 2026 GitHub Blogger. Built with Electron.</p>
     </div>
   </footer>
+
+  <!-- AI Assistant Modal -->
+  <div id="ai-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🤖 AI Assistant</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="chat-messages" class="chat-messages"></div>
+        <div class="chat-input-container">
+          <input type="text" id="chat-input" placeholder="Ask about articles, search for content..." />
+          <button id="chat-send">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

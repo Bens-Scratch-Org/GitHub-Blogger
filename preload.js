@@ -5,7 +5,8 @@ contextBridge.exposeInMainWorld('blogAPI', {
   getArticles: () => ipcRenderer.invoke('get-articles'),
   getArticle: (slug) => ipcRenderer.invoke('get-article', slug),
   searchArticles: (query) => ipcRenderer.invoke('search-articles', query),
-  refreshFeed: () => ipcRenderer.invoke('refresh-feed')
+  refreshFeed: () => ipcRenderer.invoke('refresh-feed'),
+  copilotChat: (message) => ipcRenderer.invoke('copilot-chat', message)
 });
 
 window.addEventListener('DOMContentLoaded', () => {

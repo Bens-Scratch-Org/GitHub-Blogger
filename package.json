@@ -17,6 +17,7 @@
     "electron-rebuild": "^3.2.9"
   },
   "dependencies": {
+    "@github/copilot-sdk": "^0.1.32",
     "axios": "^1.13.6",
     "electron-is-dev": "^3.0.1",
     "lowdb": "^7.0.1",

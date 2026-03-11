@@ -3,10 +3,12 @@ const isDev = require('electron-is-dev');
 const path = require('path');
 const BlogDatabase = require('./database');
 const FeedFetcher = require('./feedFetcher');
+const CopilotService = require('./copilotService');
 
 let mainWindow;
 let db;
 let feedFetcher;
+let copilot;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -43,6 +45,15 @@ app.on('ready', async () => {
     console.error('Failed to fetch posts on startup:', error);
   }
   
+  // Initialize Copilot
+  copilot = new CopilotService(db);
+  try {
+    await copilot.init();
+    console.log('Copilot SDK initialized');
+  } catch (error) {
+    console.error('Failed to initialize Copilot:', error);
+  }
+  
   createWindow();
 
   // IPC handlers for database operations
@@ -63,6 +74,15 @@ app.on('ready', async () => {
       return await feedFetcher.fetchAndStorePosts();
     } catch (error) {
       console.error('Failed to refresh feed:', error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('copilot-chat', async (event, message) => {
+    try {
+      return await copilot.chat(message);
+    } catch (error) {
+      console.error('Copilot chat error:', error);
       throw error;
     }
   });

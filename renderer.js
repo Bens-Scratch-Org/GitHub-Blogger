@@ -105,3 +105,72 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// AI Assistant Modal
+const aiModal = document.getElementById('ai-modal');
+const aiBtn = document.getElementById('ai-assist-btn');
+const modalClose = document.querySelector('.modal-close');
+const chatInput = document.getElementById('chat-input');
+const chatSend = document.getElementById('chat-send');
+const chatMessages = document.getElementById('chat-messages');
+
+if (aiBtn) {
+  aiBtn.addEventListener('click', () => {
+    aiModal.classList.add('active');
+    chatInput.focus();
+  });
+}
+
+if (modalClose) {
+  modalClose.addEventListener('click', () => {
+    aiModal.classList.remove('active');
+  });
+}
+
+// Close modal on outside click
+aiModal?.addEventListener('click', (e) => {
+  if (e.target === aiModal) {
+    aiModal.classList.remove('active');
+  }
+});
+
+// Send chat message
+async function sendChatMessage() {
+  const message = chatInput.value.trim();
+  if (!message) return;
+
+  // Add user message
+  addChatMessage(message, 'user');
+  chatInput.value = '';
+  chatSend.disabled = true;
+
+  try {
+    const response = await window.blogAPI.copilotChat(message);
+    addChatMessage(response.message || 'No response', 'assistant');
+  } catch (error) {
+    console.error('Chat error:', error);
+    addChatMessage('Sorry, I encountered an error. Please try again.', 'assistant');
+  } finally {
+    chatSend.disabled = false;
+  }
+}
+
+function addChatMessage(text, sender) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `chat-message ${sender}`;
+  messageDiv.textContent = text;
+  chatMessages.appendChild(messageDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+if (chatSend) {
+  chatSend.addEventListener('click', sendChatMessage);
+}
+
+if (chatInput) {
+  chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      sendChatMessage();
+    }
+  });
+}
