@@ -55,15 +55,7 @@ function formatDate(dateString) {
 
 // View single article
 async function viewArticle(slug) {
-  try {
-    const article = await window.blogAPI.getArticle(slug);
-    if (article) {
-      alert(`Article: ${article.title}\n\n${article.content}`);
-      // TODO: Create a proper article view page
-    }
-  } catch (error) {
-    console.error('Error loading article:', error);
-  }
+  window.location.href = `article.html?slug=${slug}`;
 }
 
 // Search functionality
