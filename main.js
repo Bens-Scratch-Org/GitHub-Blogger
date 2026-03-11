@@ -92,12 +92,9 @@ app.on('ready', async () => {
   });
 
   ipcMain.handle('refresh-feed', async () => {
-    try {
-      return await feedFetcher.fetchAndStorePosts();
-    } catch (error) {
-      console.error('Failed to refresh feed:', error);
-      throw error;
-    }
+    // Disabled due to network service crash issue
+    console.log('Feed refresh disabled to prevent crashes');
+    return { newPosts: 0, updatedPosts: 0, error: 'Feed refresh temporarily disabled' };
   });
 
   ipcMain.handle('copilot-chat', async (event, message) => {
