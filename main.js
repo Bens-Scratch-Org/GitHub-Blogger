@@ -3,12 +3,21 @@ const isDev = require('electron-is-dev');
 const path = require('path');
 const BlogDatabase = require('./database');
 const FeedFetcher = require('./feedFetcher');
-const CopilotService = require('./copilotService');
+// const CopilotService = require('./copilotService'); // ES module not compatible with CommonJS
 
 let mainWindow;
 let db;
 let feedFetcher;
 // let copilot; // Disabled until SDK CommonJS support
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -29,6 +38,14 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+  });
+
+  mainWindow.webContents.on('crashed', (event, killed) => {
+    console.error('Window crashed, killed:', killed);
+  });
+
+  mainWindow.on('unresponsive', () => {
+    console.error('Window became unresponsive');
   });
 }
 
@@ -87,13 +104,23 @@ app.on('ready', async () => {
 });
 
 app.on('window-all-closed', () => {
+  console.log('All windows closed');
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
 app.on('activate', () => {
+  console.log('App activated');
   if (mainWindow === null) {
     createWindow();
   }
+});
+
+app.on('before-quit', () => {
+  console.log('App is quitting');
+});
+
+app.on('will-quit', () => {
+  console.log('App will quit');
 });
