@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://github.blog;">
-  <title>Article - GitHub Blogger</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://github.blog;">
+  <title>GitHub Blogger</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="article.js" defer></script>
+  <script src="renderer.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -19,8 +19,11 @@
           <span>Blog</span>
         </div>
         <ul class="nav-links">
-          <li><a href="#" id="home-link">← Back to Home</a></li>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#articles">Articles</a></li>
+          <li><a href="#about">About</a></li>
           <li><button id="refresh-btn" class="refresh-btn">↻ Refresh</button></li>
+          <li><button id="ai-assist-btn" class="ai-btn">🤖 AI Assistant</button></li>
         </ul>
       </nav>
     </div>
@@ -28,17 +31,14 @@
 
   <main class="main-content">
     <div class="container">
-      <article class="article-full">
-        <div class="article-header">
-          <span id="article-category" class="article-tag"></span>
-          <h1 id="article-title" class="article-full-title"></h1>
-          <div class="article-meta">
-            <span id="article-author" class="author"></span>
-            <span id="article-date" class="date"></span>
-          </div>
-        </div>
-        <div id="article-content" class="article-body"></div>
-      </article>
+      <section class="hero">
+        <h1 class="hero-title">Welcome to GitHub Blogger</h1>
+        <p class="hero-subtitle">Stories, guides, and insights from the developer community</p>
+      </section>
+
+      <section class="articles-grid">
+        <!-- Articles will be loaded from database -->
+      </section>
     </div>
   </main>
 
@@ -47,5 +47,22 @@
       <p>&copy; 2026 GitHub Blogger. Built with Electron.</p>
     </div>
   </footer>
+
+  <!-- AI Assistant Modal -->
+  <div id="ai-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🤖 AI Assistant</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="chat-messages" class="chat-messages"></div>
+        <div class="chat-input-container">
+          <input type="text" id="chat-input" placeholder="Ask about articles, search for content..." />
+          <button id="chat-send">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

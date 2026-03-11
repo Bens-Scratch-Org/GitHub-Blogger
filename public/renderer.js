@@ -1,7 +1,8 @@
-// Load articles from database
+// Load articles from API
 async function loadArticles() {
   try {
-    const articles = await window.blogAPI.getArticles();
+    const response = await fetch('/api/articles');
+    const articles = await response.json();
     renderArticles(articles);
   } catch (error) {
     console.error('Error loading articles:', error);
@@ -55,13 +56,14 @@ function formatDate(dateString) {
 
 // View single article
 async function viewArticle(slug) {
-  await window.blogAPI.navigateToArticle(slug);
+  window.location.href = `/article?slug=${slug}`;
 }
 
 // Search functionality
 async function searchArticles(query) {
   try {
-    const results = await window.blogAPI.searchArticles(query);
+    const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+    const results = await response.json();
     renderArticles(results);
   } catch (error) {
     console.error('Error searching articles:', error);
@@ -92,7 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
       refreshBtn.disabled = true;
       refreshBtn.textContent = '↻ Refreshing...';
       try {
-        const result = await window.blogAPI.refreshFeed();
+        const response = await fetch('/api/refresh', { method: 'POST' });
+        const result = await response.json();
         await loadArticles();
         alert(`Feed refreshed! ${result.newPosts} new posts, ${result.updatedPosts} updated posts`);
       } catch (error) {
@@ -139,14 +142,18 @@ async function sendChatMessage() {
   const message = chatInput.value.trim();
   if (!message) return;
 
-  // Add user message
   addChatMessage(message, 'user');
   chatInput.value = '';
   chatSend.disabled = true;
 
   try {
-    const response = await window.blogAPI.copilotChat(message);
-    addChatMessage(response.message || 'No response', 'assistant');
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
+    });
+    const data = await response.json();
+    addChatMessage(data.message || 'No response', 'assistant');
   } catch (error) {
     console.error('Chat error:', error);
     addChatMessage('Sorry, I encountered an error. Please try again.', 'assistant');

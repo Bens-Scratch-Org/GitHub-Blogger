@@ -10,9 +10,10 @@ async function loadArticle() {
   }
 
   try {
-    const article = await window.blogAPI.getArticle(articleSlug);
+    const response = await fetch(`/api/articles/${articleSlug}`);
+    const article = await response.json();
     
-    if (!article) {
+    if (!article || article.error) {
       document.querySelector('.article-full').innerHTML = '<p>Article not found</p>';
       return;
     }
@@ -57,9 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add home navigation
   const homeLink = document.getElementById('home-link');
   if (homeLink) {
-    homeLink.addEventListener('click', async (e) => {
+    homeLink.addEventListener('click', (e) => {
       e.preventDefault();
-      await window.blogAPI.navigateHome();
+      window.location.href = '/';
     });
   }
 });
