@@ -59,15 +59,15 @@ app.on('ready', async () => {
   
   createWindow();
   
-  // Fetch posts after window is created
-  setTimeout(async () => {
-    try {
-      await feedFetcher.fetchAndStorePosts();
-      mainWindow?.webContents.send('feed-updated');
-    } catch (error) {
-      console.error('Failed to fetch posts on startup:', error);
-    }
-  }, 2000);
+  // Disable automatic feed fetch - use manual refresh button instead
+  // setTimeout(async () => {
+  //   try {
+  //     await feedFetcher.fetchAndStorePosts();
+  //     mainWindow?.webContents.send('feed-updated');
+  //   } catch (error) {
+  //     console.error('Failed to fetch posts on startup:', error);
+  //   }
+  // }, 2000);
   
   // Initialize Copilot
   // copilot = new CopilotService(db);
