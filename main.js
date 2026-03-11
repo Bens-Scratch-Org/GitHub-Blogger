@@ -62,12 +62,17 @@ app.on('ready', async () => {
   
   feedFetcher = new FeedFetcher(db);
   
-  // Fetch posts on startup
-  try {
-    await feedFetcher.fetchAndStorePosts();
-  } catch (error) {
-    console.error('Failed to fetch posts on startup:', error);
-  }
+  createWindow();
+  
+  // Fetch posts after window is created
+  setTimeout(async () => {
+    try {
+      await feedFetcher.fetchAndStorePosts();
+      mainWindow?.webContents.send('feed-updated');
+    } catch (error) {
+      console.error('Failed to fetch posts on startup:', error);
+    }
+  }, 2000);
   
   // Initialize Copilot
   // copilot = new CopilotService(db);
@@ -77,8 +82,6 @@ app.on('ready', async () => {
   // } catch (error) {
   //   console.error('Failed to initialize Copilot:', error);
   // }
-  
-  createWindow();
 
   // IPC handlers for database operations
   ipcMain.handle('get-articles', async () => {
