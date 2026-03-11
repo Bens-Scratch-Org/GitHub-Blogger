@@ -4,41 +4,53 @@ const xml2js = require('xml2js');
 class FeedFetcher {
   constructor(database) {
     this.db = database;
-    this.feedUrl = 'https://github.com/blog.atom';
+    this.feedUrl = 'https://github.blog/feed/';
   }
 
   async fetchAndStorePosts() {
     try {
       console.log('Fetching GitHub blog posts...');
       
-      const response = await axios.get(this.feedUrl);
+      const response = await axios.get(this.feedUrl, {
+        headers: {
+          'User-Agent': 'GitHub-Blogger-App'
+        }
+      });
       const xmlData = response.data;
       
-      const parser = new xml2js.Parser();
+      const parser = new xml2js.Parser({
+        strict: false,
+        trim: true,
+        normalize: true,
+        explicitArray: false
+      });
       const result = await parser.parseStringPromise(xmlData);
       
-      if (!result.feed || !result.feed.entry) {
+      if (!result.rss || !result.rss.channel || !result.rss.channel.item) {
         console.log('No entries found in feed');
-        return;
+        return { newPosts: 0, updatedPosts: 0 };
       }
 
-      const entries = result.feed.entry.slice(0, 20); // Get last 20 posts
+      const entries = Array.isArray(result.rss.channel.item) 
+        ? result.rss.channel.item.slice(0, 20) 
+        : [result.rss.channel.item];
+      
       let newPosts = 0;
       let updatedPosts = 0;
 
       for (const entry of entries) {
-        const slug = this.generateSlug(entry.title[0]);
+        const slug = this.generateSlug(entry.title);
         const existingArticle = this.db.getArticleBySlug(slug);
 
         const articleData = {
-          title: entry.title[0],
+          title: entry.title,
           slug: slug,
           content: this.extractContent(entry),
           excerpt: this.extractExcerpt(entry),
           author: this.extractAuthor(entry),
           category: this.extractCategory(entry),
           tags: this.extractTags(entry),
-          published_date: entry.published ? entry.published[0] : new Date().toISOString(),
+          published_date: entry.pubdate || entry.pubDate || new Date().toISOString(),
           status: 'published'
         };
 
@@ -90,18 +102,19 @@ class FeedFetcher {
   }
 
   extractContent(entry) {
-    if (entry.content && entry.content[0] && entry.content[0]._) {
-      return this.stripHtml(entry.content[0]._);
+    // RSS feed uses 'content:encoded' or 'description'
+    if (entry['content:encoded']) {
+      return this.stripHtml(entry['content:encoded']);
     }
-    if (entry.summary && entry.summary[0]) {
-      return this.stripHtml(entry.summary[0]);
+    if (entry.description) {
+      return this.stripHtml(entry.description);
     }
     return 'Content not available';
   }
 
   extractExcerpt(entry) {
-    if (entry.summary && entry.summary[0]) {
-      const summary = this.stripHtml(entry.summary[0]);
+    if (entry.description) {
+      const summary = this.stripHtml(entry.description);
       return summary.substring(0, 200) + (summary.length > 200 ? '...' : '');
     }
     const content = this.extractContent(entry);
@@ -109,22 +122,31 @@ class FeedFetcher {
   }
 
   extractAuthor(entry) {
-    if (entry.author && entry.author[0] && entry.author[0].name) {
-      return entry.author[0].name[0];
+    if (entry['dc:creator']) {
+      return entry['dc:creator'];
+    }
+    if (entry.author) {
+      return entry.author;
     }
     return 'GitHub';
   }
 
   extractCategory(entry) {
-    if (entry.category && entry.category[0] && entry.category[0].$.term) {
-      return entry.category[0].$.term;
+    if (entry.category) {
+      if (Array.isArray(entry.category)) {
+        return entry.category[0];
+      }
+      return entry.category;
     }
     return 'General';
   }
 
   extractTags(entry) {
-    if (entry.category && Array.isArray(entry.category)) {
-      return entry.category.map(cat => cat.$.term).filter(Boolean);
+    if (entry.category) {
+      if (Array.isArray(entry.category)) {
+        return entry.category.slice(0, 5);
+      }
+      return [entry.category];
     }
     return [];
   }
