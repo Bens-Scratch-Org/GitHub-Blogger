@@ -28,8 +28,9 @@ function createWindow() {
   });
 }
 
-app.on('ready', () => {
+app.on('ready', async () => {
   db = new BlogDatabase();
+  await db.init();
   createWindow();
 
   // IPC handlers for database operations
@@ -47,9 +48,6 @@ app.on('ready', () => {
 });
 
 app.on('window-all-closed', () => {
-  if (db) {
-    db.close();
-  }
   if (process.platform !== 'darwin') {
     app.quit();
   }
