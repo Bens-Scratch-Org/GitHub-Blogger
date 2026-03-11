@@ -117,10 +117,11 @@ app.on('ready', async () => {
 });
 
 app.on('window-all-closed', () => {
-  console.log('All windows closed');
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  console.log('All windows closed - NOT quitting on macOS');
+  // Don't quit on macOS - keep app in dock
+  // if (process.platform !== 'darwin') {
+  //   app.quit();
+  // }
 });
 
 app.on('activate', () => {
