@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const axios = require('axios');
 const xml2js = require('xml2js');
 
 class FeedFetcher {
@@ -11,12 +11,9 @@ class FeedFetcher {
     try {
       console.log('Fetching GitHub blog posts...');
       
-      const response = await fetch(this.feedUrl);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const response = await axios.get(this.feedUrl);
+      const xmlData = response.data;
       
-      const xmlData = await response.text();
       const parser = new xml2js.Parser();
       const result = await parser.parseStringPromise(xmlData);
       
