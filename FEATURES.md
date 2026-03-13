@@ -394,31 +394,31 @@ This document outlines potential new features and enhancements for GitHub-Blogge
 
 ## 🚀 Implementation Roadmap
 
-### Phase 1: Core Enhancements (Q2 2026)
+### Phase 1: Core Enhancements (Next 3 months)
 - Article Bookmarking & Collections (#5)
 - Advanced Search with Filters (#9)
 - Reading Mode / Focus Mode (#1)
 - RSS Feed Refresh Notifications (#15)
 
-### Phase 2: Discovery & Engagement (Q3 2026)
+### Phase 2: Discovery & Engagement (3–6 months)
 - Article Reading Progress Indicator (#2)
 - Article Annotations & Highlights (#6)
 - Social Sharing Integration (#12)
 - Keyboard Shortcuts & Commands (#17)
 
-### Phase 3: Content Management (Q4 2026)
+### Phase 3: Content Management (6–9 months)
 - Article History & Read Tracking (#7)
 - Tag Cloud & Category Browser (#10)
 - Article Export & Offline Reading (#18)
 - Smart Article Recommendations (#8)
 
-### Phase 4: Community & Polish (Q1 2027)
+### Phase 4: Community & Polish (9–12 months)
 - Comments & Discussion (#13)
 - Article Reactions & Ratings (#14)
 - Personal Reading Analytics Dashboard (#20)
 - Customizable Color Themes (#4)
 
-### Phase 5: Advanced Features (Q2 2027)
+### Phase 5: Advanced Features (12–18 months)
 - Multi-Column Grid Layout Options (#3)
 - Article Preview on Hover (#11)
 - Email Digest Subscription (#16)
@@ -452,4 +452,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ---
 
-*Last updated: 2026-03-13*
+*Last updated: YYYY-MM-DD*
