@@ -6,3 +6,6 @@ build/
 npm-debug.log*
 .env
 .env.local
+
+# Rust/Tauri
+src-tauri/target/
