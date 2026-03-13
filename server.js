@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 const BlogDatabase = require('./database-node');
 const FeedFetcher = require('./feedFetcher-node');
 
@@ -9,9 +10,29 @@ const PORT = process.env.PORT || 3000;
 let db;
 let feedFetcher;
 
+// Rate limiter configuration
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const refreshLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 5, // Limit refresh endpoint to 5 requests per 5 minutes
+  message: 'Too many refresh requests, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Apply rate limiter to API routes
+app.use('/api/', apiLimiter);
 
 // Initialize database
 async function init() {
@@ -55,7 +76,7 @@ app.get('/api/search', (req, res) => {
   }
 });
 
-app.post('/api/refresh', async (req, res) => {
+app.post('/api/refresh', refreshLimiter, async (req, res) => {
   try {
     const result = await feedFetcher.fetchAndStorePosts();
     res.json(result);
