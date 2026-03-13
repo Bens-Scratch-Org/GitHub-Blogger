@@ -1,5 +1,10 @@
 const axios = require('axios');
 const xml2js = require('xml2js');
+const createDOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
 
 class FeedFetcher {
   constructor(database) {
@@ -108,13 +113,23 @@ class FeedFetcher {
 
   extractContent(entry) {
     // RSS feed uses 'content:encoded' or 'description'
+    // Sanitize HTML to allow safe tags but remove scripts and dangerous content
+    let content = '';
     if (entry['content:encoded']) {
-      return this.stripHtml(entry['content:encoded']);
+      content = entry['content:encoded'];
+    } else if (entry.description) {
+      content = entry.description;
+    } else {
+      return 'Content not available';
     }
-    if (entry.description) {
-      return this.stripHtml(entry.description);
-    }
-    return 'Content not available';
+    
+    // Sanitize HTML while preserving safe formatting and images
+    return DOMPurify.sanitize(content, {
+      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'a', 'img', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'div', 'span', 'figure', 'figcaption'],
+      ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel', 'width', 'height'],
+      ALLOW_DATA_ATTR: false,
+      FORCE_BODY: true
+    });
   }
 
   extractExcerpt(entry) {
@@ -157,24 +172,18 @@ class FeedFetcher {
   }
 
   stripHtml(html) {
-    // Remove script and style tags with their content first
-    // Use a more comprehensive regex that handles whitespace and attributes
-    let clean = html
-      .replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, '')
-      .replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, '');
+    // Use DOMPurify to safely remove all HTML tags while preserving text
+    // This is more secure than regex-based approaches
+    const cleaned = DOMPurify.sanitize(html, { 
+      ALLOWED_TAGS: [], // Strip all HTML tags
+      KEEP_CONTENT: true // Keep the text content
+    });
     
-    // Remove all remaining HTML tags
-    clean = clean.replace(/<[^>]*>/g, '');
+    // Decode HTML entities
+    const doc = new JSDOM(cleaned).window.document;
+    const text = doc.body.textContent || '';
     
-    // Decode HTML entities (process &amp; last to avoid double-decoding)
-    clean = clean
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&quot;/g, '"')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&amp;/g, '&');
-    
-    return clean.trim();
+    return text.trim();
   }
 }
 
