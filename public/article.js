@@ -77,12 +77,27 @@ function updateThemeButton(theme) {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
+  initReadingMode();
   loadArticle();
 
   // Theme toggle
   const themeBtn = document.getElementById('theme-toggle-btn');
   if (themeBtn) {
     themeBtn.addEventListener('click', toggleTheme);
+  }
+
+  // Reading mode toggle
+  const readingModeBtn = document.getElementById('reading-mode-btn');
+  if (readingModeBtn) {
+    readingModeBtn.addEventListener('click', toggleReadingMode);
+  }
+
+  // Close controls button
+  const closeControlsBtn = document.getElementById('close-controls');
+  if (closeControlsBtn) {
+    closeControlsBtn.addEventListener('click', () => {
+      document.getElementById('reading-mode-controls').style.display = 'none';
+    });
   }
 
   // Add home navigation
@@ -93,4 +108,85 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = '/index.html';
     });
   }
+
+  // Initialize reading mode controls
+  initReadingModeControls();
 });
+
+// Reading Mode functionality
+function initReadingMode() {
+  const savedReadingMode = localStorage.getItem('readingMode') === 'true';
+  const savedSize = localStorage.getItem('readingSize') || 'normal';
+  const savedSpacing = localStorage.getItem('readingSpacing') || 'normal';
+  const savedBackground = localStorage.getItem('readingBackground') || 'default';
+
+  if (savedReadingMode) {
+    document.body.classList.add('reading-mode');
+    document.getElementById('reading-mode-btn').classList.add('active');
+    document.getElementById('reading-mode-controls').style.display = 'block';
+  }
+
+  document.body.setAttribute('data-reading-size', savedSize);
+  document.body.setAttribute('data-reading-spacing', savedSpacing);
+  document.body.setAttribute('data-reading-background', savedBackground);
+}
+
+function toggleReadingMode() {
+  const isActive = document.body.classList.toggle('reading-mode');
+  const btn = document.getElementById('reading-mode-btn');
+  const controls = document.getElementById('reading-mode-controls');
+
+  btn.classList.toggle('active', isActive);
+  controls.style.display = isActive ? 'block' : 'none';
+
+  localStorage.setItem('readingMode', isActive);
+}
+
+function initReadingModeControls() {
+  // Text size controls
+  const sizeButtons = document.querySelectorAll('[data-size]');
+  sizeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const size = btn.getAttribute('data-size');
+      document.body.setAttribute('data-reading-size', size);
+      localStorage.setItem('readingSize', size);
+      updateActiveButton(sizeButtons, btn);
+    });
+  });
+
+  // Line spacing controls
+  const spacingButtons = document.querySelectorAll('[data-spacing]');
+  spacingButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const spacing = btn.getAttribute('data-spacing');
+      document.body.setAttribute('data-reading-spacing', spacing);
+      localStorage.setItem('readingSpacing', spacing);
+      updateActiveButton(spacingButtons, btn);
+    });
+  });
+
+  // Background color controls
+  const backgroundButtons = document.querySelectorAll('[data-background]');
+  backgroundButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const background = btn.getAttribute('data-background');
+      document.body.setAttribute('data-reading-background', background);
+      localStorage.setItem('readingBackground', background);
+      updateActiveButton(backgroundButtons, btn);
+    });
+  });
+
+  // Set initial active states
+  const savedSize = localStorage.getItem('readingSize') || 'normal';
+  const savedSpacing = localStorage.getItem('readingSpacing') || 'normal';
+  const savedBackground = localStorage.getItem('readingBackground') || 'default';
+
+  document.querySelector(`[data-size="${savedSize}"]`)?.classList.add('active');
+  document.querySelector(`[data-spacing="${savedSpacing}"]`)?.classList.add('active');
+  document.querySelector(`[data-background="${savedBackground}"]`)?.classList.add('active');
+}
+
+function updateActiveButton(buttons, activeBtn) {
+  buttons.forEach(btn => btn.classList.remove('active'));
+  activeBtn.classList.add('active');
+}
