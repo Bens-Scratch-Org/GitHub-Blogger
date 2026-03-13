@@ -108,8 +108,11 @@ class FeedFetcher {
   }
 
   extractContent(entry) {
-    // RSS feed uses 'content:encoded' or 'description'
+    // RSS feed uses 'encoded' (after stripping 'content:' prefix) or 'description'
     // Keep HTML including images for proper content display
+    if (entry.encoded) {
+      return entry.encoded;
+    }
     if (entry['content:encoded']) {
       return entry['content:encoded'];
     }
@@ -160,22 +163,25 @@ class FeedFetcher {
 
   extractFeaturedImage(entry) {
     // Try to extract featured image from various RSS fields
-    // Check media:content
-    if (entry['media:content'] && entry['media:content'].$.url) {
+    // Check media:content (after prefix stripping it's just 'content')
+    if (entry['media:content'] && entry['media:content'].$ && entry['media:content'].$.url) {
       return entry['media:content'].$.url;
     }
     
+    if (entry.content && entry.content.$ && entry.content.$.url) {
+      return entry.content.$.url;
+    }
+    
     // Check enclosure (common in RSS feeds)
-    if (entry.enclosure && entry.enclosure.$ && entry.enclosure.$.url) {
-      const url = entry.enclosure.$.url;
-      // Check if it's an image
-      if (url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+    if (entry.enclosure) {
+      const url = entry.enclosure.$ ? entry.enclosure.$.url : entry.enclosure;
+      if (url && typeof url === 'string' && url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
         return url;
       }
     }
     
-    // Extract first image from content
-    const content = entry['content:encoded'] || entry.description || '';
+    // Extract first image from content (after prefix stripping)
+    const content = entry.encoded || entry['content:encoded'] || entry.description || '';
     const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
     if (imgMatch && imgMatch[1]) {
       return imgMatch[1];
