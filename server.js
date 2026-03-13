@@ -27,6 +27,14 @@ const refreshLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const pageLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 30, // Limit page requests to 30 per minute
+  message: 'Too many page requests, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -86,11 +94,11 @@ app.post('/api/refresh', refreshLimiter, async (req, res) => {
 });
 
 // Serve HTML pages
-app.get('/', (req, res) => {
+app.get('/', pageLimiter, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/article', (req, res) => {
+app.get('/article', pageLimiter, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'article.html'));
 });
 

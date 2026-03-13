@@ -192,20 +192,21 @@ class FeedFetcher {
 
   stripHtml(html) {
     // Remove script and style tags with their content first
+    // Use a more comprehensive regex that handles whitespace and attributes
     let clean = html
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
+      .replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, '')
+      .replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, '');
     
-    // Remove all HTML tags
+    // Remove all remaining HTML tags
     clean = clean.replace(/<[^>]*>/g, '');
     
-    // Decode HTML entities
+    // Decode HTML entities (process &amp; last to avoid double-decoding)
     clean = clean
       .replace(/&nbsp;/g, ' ')
       .replace(/&quot;/g, '"')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
-      .replace(/&amp;/g, '&'); // Process &amp; last to avoid double-decoding
+      .replace(/&amp;/g, '&');
     
     return clean.trim();
   }
