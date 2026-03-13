@@ -19,12 +19,45 @@
         </div>
         <ul class="nav-links">
           <li><a href="#" id="home-link">← Back to Home</a></li>
+          <li><button id="reading-mode-btn" class="reading-mode-btn" title="Toggle reading mode">📖</button></li>
           <li><button id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle dark mode">🌙</button></li>
           <li><button id="refresh-btn" class="refresh-btn">↻ Refresh</button></li>
         </ul>
       </nav>
     </div>
   </header>
+
+  <!-- Reading Mode Controls Panel -->
+  <div id="reading-mode-controls" class="reading-mode-controls" style="display: none;">
+    <div class="controls-header">
+      <span>Reading Settings</span>
+      <button id="close-controls" class="close-controls-btn">✕</button>
+    </div>
+    <div class="controls-section">
+      <label>Text Size:</label>
+      <div class="control-buttons">
+        <button class="control-btn" data-size="normal">A</button>
+        <button class="control-btn" data-size="large">A+</button>
+        <button class="control-btn" data-size="xlarge">A++</button>
+      </div>
+    </div>
+    <div class="controls-section">
+      <label>Line Spacing:</label>
+      <div class="control-buttons">
+        <button class="control-btn" data-spacing="normal">Normal</button>
+        <button class="control-btn" data-spacing="relaxed">Relaxed</button>
+        <button class="control-btn" data-spacing="loose">Loose</button>
+      </div>
+    </div>
+    <div class="controls-section">
+      <label>Background:</label>
+      <div class="control-buttons">
+        <button class="control-btn" data-background="default">Default</button>
+        <button class="control-btn" data-background="sepia">Sepia</button>
+        <button class="control-btn" data-background="dark">Dark</button>
+      </div>
+    </div>
+  </div>
 
   <main class="main-content">
     <div class="container">
