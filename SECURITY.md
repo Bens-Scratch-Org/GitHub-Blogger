@@ -8,13 +8,47 @@
 
 ## Security Fixes
 
-### 2026-03-13
+### 2026-03-13 - Update 2
 
-#### Fixed Issues
+#### All Code Scanning Alerts Resolved ✅
+
+All code scanning security alerts have been fixed:
 
 1. **Incomplete Script Tag Sanitization** (js/incomplete-multi-character-sanitization)
    - **Severity**: Warning
+   - **Fixed in**: commit 656a5a3
+   - Enhanced `stripHtml()` function with improved regex patterns
+   - Now handles tags with whitespace (e.g., `</script >`)
+   - Uses `[\s\S]*?` for proper multiline matching
+   - Completely removes script and style tags before HTML stripping
+
+2. **Bad Tag Filter** (js/bad-tag-filter)
+   - **Severity**: Warning
+   - **Fixed in**: commit 656a5a3
+   - Improved regex to match all script tag variations including those with spaces before closing brackets
+
+3. **Double-Escaping Issue** (js/double-escaping)
+   - **Severity**: Warning
    - **Fixed in**: commit 63c287f
+   - Reordered HTML entity decoding to process `&amp;` last
+   - Prevents double-unescaping of content
+
+4. **Missing Rate Limiting** (js/missing-rate-limiting)
+   - **Severity**: Warning
+   - **Fixed in**: commits 63c287f and 656a5a3
+   - Added rate limiting to all API routes: 100 requests per 15 minutes
+   - Added stricter rate limiting to refresh endpoint: 5 requests per 5 minutes
+   - Added rate limiting to page routes: 30 requests per minute
+   - Protects against abuse and DoS attacks
+
+### 2026-03-13 - Initial Fixes
+
+_Note: The following issues were initially addressed but required additional refinement (see Update 2 above for final fixes)_
+
+1. **Incomplete Script Tag Sanitization** (js/incomplete-multi-character-sanitization)
+   - **Severity**: Warning
+   - **Initial fix in**: commit 63c287f
+   - **Final fix in**: commit 656a5a3
    - Improved `stripHtml()` function to properly remove `<script>` and `<style>` tags with their content before stripping other HTML tags
    - This prevents potential HTML injection vulnerabilities
 
@@ -26,9 +60,11 @@
 
 3. **Missing Rate Limiting** (js/missing-rate-limiting)
    - **Severity**: Warning
-   - **Fixed in**: commit 63c287f
+   - **Initial fix in**: commit 63c287f
+   - **Complete fix in**: commit 656a5a3
    - Added rate limiting to all API routes: 100 requests per 15 minutes
    - Added stricter rate limiting to refresh endpoint: 5 requests per 5 minutes
+   - Added page route rate limiting: 30 requests per minute
    - Protects against abuse and DoS attacks
 
 #### Known Issues
