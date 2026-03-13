@@ -1,5 +1,32 @@
-// Use Tauri invoke when available, fall back to fetch for browser-only testing
-const invoke = window.__TAURI__?.core?.invoke || window.__TAURI_INVOKE__;
+// Use Tauri invoke when available, fall back to fetch for browser-only mode
+const tauriInvoke = window.__TAURI__?.core?.invoke || window.__TAURI_INVOKE__;
+
+const API_MAP = {
+  get_articles:    { method: 'GET',  url: '/api/articles' },
+  get_article:     { method: 'GET',  url: '/api/articles/' },  // + slug
+  search_articles: { method: 'GET',  url: '/api/search' },     // ?q=query
+  refresh_feed:    { method: 'POST', url: '/api/refresh' },
+};
+
+async function invoke(cmd, args = {}) {
+  if (tauriInvoke) return tauriInvoke(cmd, args);
+
+  const route = API_MAP[cmd];
+  if (!route) throw new Error(`Unknown command: ${cmd}`);
+
+  let url = route.url;
+  const opts = { method: route.method };
+
+  if (cmd === 'get_article') {
+    url += encodeURIComponent(args.slug);
+  } else if (cmd === 'search_articles') {
+    url += '?q=' + encodeURIComponent(args.query);
+  }
+
+  const res = await fetch(url, opts);
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
 
 // ── View switching ────────────────────────────────────────────────────────────
 
@@ -197,6 +224,15 @@ document.addEventListener('DOMContentLoaded', () => {
   if (backBtn) {
     backBtn.addEventListener('click', () => showListView());
   }
+
+  // Nav links (Home, Articles, About)
+  document.querySelectorAll('.nav-links a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      showListView();
+      window.scrollTo(0, 0);
+    });
+  });
 
   // Search
   const searchInput = document.querySelector('#search-input');

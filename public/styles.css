@@ -88,6 +88,23 @@ body {
   color: var(--color-accent);
 }
 
+.search-input {
+  padding: 6px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--color-card-bg);
+  color: var(--color-text);
+  width: 180px;
+  transition: border-color 0.2s, width 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  width: 240px;
+}
+
 .refresh-btn {
   background: var(--color-accent);
   color: white;
