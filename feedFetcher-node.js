@@ -52,6 +52,7 @@ class FeedFetcher {
           author: this.extractAuthor(entry),
           category: this.extractCategory(entry),
           tags: this.extractTags(entry),
+          image_url: this.extractFeaturedImage(entry),
           published_date: entry.pubdate || entry.pubDate || new Date().toISOString(),
           status: 'published'
         };
@@ -108,11 +109,12 @@ class FeedFetcher {
 
   extractContent(entry) {
     // RSS feed uses 'content:encoded' or 'description'
+    // Keep HTML including images for proper content display
     if (entry['content:encoded']) {
-      return this.stripHtml(entry['content:encoded']);
+      return entry['content:encoded'];
     }
     if (entry.description) {
-      return this.stripHtml(entry.description);
+      return entry.description;
     }
     return 'Content not available';
   }
@@ -154,6 +156,32 @@ class FeedFetcher {
       return [entry.category];
     }
     return [];
+  }
+
+  extractFeaturedImage(entry) {
+    // Try to extract featured image from various RSS fields
+    // Check media:content
+    if (entry['media:content'] && entry['media:content'].$.url) {
+      return entry['media:content'].$.url;
+    }
+    
+    // Check enclosure (common in RSS feeds)
+    if (entry.enclosure && entry.enclosure.$ && entry.enclosure.$.url) {
+      const url = entry.enclosure.$.url;
+      // Check if it's an image
+      if (url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+        return url;
+      }
+    }
+    
+    // Extract first image from content
+    const content = entry['content:encoded'] || entry.description || '';
+    const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+    if (imgMatch && imgMatch[1]) {
+      return imgMatch[1];
+    }
+    
+    return null;
   }
 
   stripHtml(html) {

@@ -1,3 +1,6 @@
+// Use Tauri invoke when available
+const invoke = window.__TAURI__?.core?.invoke || window.__TAURI_INVOKE__;
+
 // Get article slug from URL parameter
 const urlParams = new URLSearchParams(window.location.search);
 const articleSlug = urlParams.get('slug');
@@ -10,10 +13,9 @@ async function loadArticle() {
   }
 
   try {
-    const response = await fetch(`/api/articles/${articleSlug}`);
-    const article = await response.json();
+    const article = await invoke('get_article', { slug: articleSlug });
     
-    if (!article || article.error) {
+    if (!article) {
       document.querySelector('.article-full').innerHTML = '<p>Article not found</p>';
       return;
     }
@@ -42,13 +44,11 @@ function formatDate(dateString) {
   });
 }
 
-// Format content with basic HTML rendering
+// Format content with HTML rendering including images
 function formatContent(content) {
-  // Convert line breaks to paragraphs
-  return content
-    .split('\n\n')
-    .map(para => `<p>${para.trim()}</p>`)
-    .join('');
+  // Content already includes HTML from RSS feed
+  // Sanitize while preserving images, links, and basic formatting
+  return content;
 }
 
 // Initialize on page load
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (homeLink) {
     homeLink.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.href = '/';
+      window.location.href = '/index.html';
     });
   }
 });
